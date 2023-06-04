@@ -1,26 +1,31 @@
 require("dotenv").config();
-
 const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
+const cors = require("cors");
+const morgan = require("morgan");
 
-const { UserRouter, AuctionRouter, BiddingRouter } = require("./routes");
-const { ErrorHandler, NotFoundHandler } = require("./middlewares");
 const { MongoDB } = require("./database");
+const { ErrorHandler, NotFoundHandler } = require("./middlewares");
+const { AuthRouter } = require("./routes");
 
-PORT = process.env.PORT || 3000;
-
+const PORT = process.env.PORT || 3000;
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: "*" } });
 
+const io = new Server(server, { cors: { origin: "*" } });
+// io.on("connection", require("./utils/io"));
+
+app.use(cors());
+app.use(
+	morgan(":method :url :status :res[content-length] - :response-time ms")
+);
 app.use(express.json());
-app.use("/api/v1/users", UserRouter);
-app.use("/api/v1/auctions", AuctionRouter);
-app.use("/api/v1/biddings", BiddingRouter);
 
 app.use(ErrorHandler);
 app.use(NotFoundHandler);
+
+app.use("/api/v1", AuthRouter);
 
 const start = async () => {
 	try {
