@@ -11,13 +11,19 @@ const Auction = mongoose.Schema(
 			required: false,
 			default: 0,
 		},
-		minBidAmount: {
+		basePrice: {
 			type: Number,
 			required: true,
 			default: 100,
 		},
-		time: {
+		duration: {
 			type: Number,
+			required: true,
+			default: 300,
+		},
+		timer: {
+			type: Number,
+			default: 300,
 			required: true,
 		},
 		image: {

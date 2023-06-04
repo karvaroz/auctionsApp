@@ -1,24 +1,16 @@
 const mongoose = require("mongoose");
 
 const Bidding = mongoose.Schema({
-	name: {
-		type: String,
-		required: true,
+	author: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "User",
 	},
-	description: {
-		type: String,
+	product: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "Auction",
 	},
-	quantity: {
+	bidAmount: {
 		type: Number,
-		required: false,
-		default: 0,
-	},
-	price: {
-		type: Number,
-		required: true,
-	},
-	category: {
-		type: String,
 		required: true,
 	},
 });
