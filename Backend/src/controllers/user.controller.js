@@ -1,30 +1,39 @@
+const { HandleBcrypt, GenerateToken } = require("../helpers");
+const { UserModel } = require("../models");
 const { UserService } = require("../services");
 
-const getAllUsers = async (req, res) => {
-	try {
-		const users = await UserService.getAllUsers();
-		res.status(200).json({ status: "OK", total: users.length, data: users });
-	} catch (error) {
-		res
-			.status(error?.status || 500)
-			.json({ status: "FAILED", data: { error: error?.message || error } });
-	}
-};
+const loginUser = async (req, res) => {
+	const { email, password } = req.body;
 
-const getOneUserById = async (req, res) => {
-	const { userId } = req.params;
+	const isUserRegistered = await UserModel.findOne({ email });
 
-	if (!userId) {
-		res.status(400).send({
+	if (!isUserRegistered) {
+		res.status(404).json({
 			status: "FAILED",
-			data: { error: "Parameter ':userId' can not be empty" },
+			data: { error: "Email not found, please register" },
+		});
+		return;
+	}
+
+	const isPasswordCorrect = await HandleBcrypt.compare(
+		password, isUserRegistered.password
+	);
+
+	if (!isPasswordCorrect) {
+		res.status(401).json({
+			status: "FAILED",
+			data: { error: "Incorrect password" },
 		});
 		return;
 	}
 
 	try {
-		const userById = await UserService.getOneUserById(userId);
-		res.status(200).json({ status: "OK", data: userById });
+		const token = await GenerateToken.tokenSign(isUserRegistered);
+
+		res.status(200).json({
+			status: "OK",
+			token
+		});
 	} catch (error) {
 		res
 			.status(error?.status || 500)
@@ -32,56 +41,18 @@ const getOneUserById = async (req, res) => {
 	}
 };
 
-const createNewUser = async (req, res) => {
-	const user = req.body;
-
+const registerUser = async (req, res) => {
 	try {
+		const user = req.body;
 		const createUser = await UserService.createNewUser(user);
-		res.status(201).json({ status: "OK", data: createUser });
-	} catch (error) {
-		console.log(error);
-		res
-			.status(error?.status || 500)
-			.json({ status: "FAILED", data: { error: error?.message || error } });
-	}
-};
-
-const updateOneUserById = async (req, res) => {
-	const { userId } = req.params;
-	const userInfo = req.body;
-	try {
-		await UserService.updateOneUserById(userId, userInfo);
-		res.status(200).json({ status: "OK", data: `User ${userId} updated` });
+		if (createUser) res.status(201).json({ status: "OK", data: createUser });
 	} catch (error) {
 		res
 			.status(error?.status || 500)
 			.json({ status: "FAILED", data: { error: error?.message || error } });
 	}
 };
-const deleteOneUserById = async (req, res) => {
-	const { userId } = req.params;
-
-	if (!userId) {
-		res.status(400).json({
-			status: "FAILED",
-			data: { error: "Parameter ':userId' can not be empty" },
-		});
-		return;
-	}
-	try {
-		await UserService.deleteOneUserById(userId);
-		res.status(200).json({ status: "OK", data: `Product ${userId} deleted` });
-	} catch (error) {
-		res
-			.status(error?.status || 500)
-			.json({ status: "FAILED", data: { error: error?.message || error } });
-	}
-};
-
 module.exports = {
-	getAllUsers,
-	getOneUserById,
-	createNewUser,
-	updateOneUserById,
-	deleteOneUserById,
+	loginUser,
+	registerUser,
 };
