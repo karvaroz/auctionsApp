@@ -7,7 +7,7 @@ const morgan = require("morgan");
 
 const { MongoDB } = require("./database");
 const { ErrorHandler, NotFoundHandler } = require("./middlewares");
-const { AuthRouter } = require("./routes");
+const { AuthRouter, AuctionRouter } = require("./routes");
 
 const PORT = process.env.PORT || 3000;
 const app = express();
@@ -26,6 +26,7 @@ app.use(ErrorHandler);
 app.use(NotFoundHandler);
 
 app.use("/api/v1", AuthRouter);
+app.use("/api/v1", AuctionRouter)
 
 const start = async () => {
 	try {
