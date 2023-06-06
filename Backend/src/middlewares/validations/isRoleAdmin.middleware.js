@@ -7,7 +7,7 @@ const isRoleAdmin = async (req, res, next) => {
 
 	const userData = await UserService.getUserById(tokenData.id);
 
-	if (userData.role == "Admin") {
+	if (userData.role = "Admin") {
 		next();
 		return;
 	}
