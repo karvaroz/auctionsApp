@@ -21,9 +21,7 @@ const User = mongoose.Schema(
 			default: "User",
 		},
 	},
-	{
-		timestamps: true,
-	}
+	{ timestamps: true }
 );
 
 module.exports = mongoose.model("UserCollection", User);
