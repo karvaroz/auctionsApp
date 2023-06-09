@@ -11,3 +11,5 @@ exports.AdSchemaValidation = require("./validations/ad.middleware")
 
 exports.isAuthenticated = require("./validations/isAuth.middleware")
 exports.isRoleAdmin = require("./validations/isRoleAdmin.middleware")
+
+exports.Socket = require("./validations/socket.middleware")
