@@ -1,7 +1,7 @@
 const { AdModel, AuctionModel } = require("../models")
 
 const createNewAd = async (ad) => {
-    const { currentPrice, basePrice, timer, duration } = ad
+    const { basePrice, duration } = ad
 
     const createAd = await new AdModel({
         ...ad,
