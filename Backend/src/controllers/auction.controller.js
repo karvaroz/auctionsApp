@@ -1,29 +1,38 @@
-const { AdModel } = require("../models");
+const { AdModel, AuctionModel } = require("../models");
 const { AuctionService } = require("../services");
 
-const addAd = async (req, res) => {
+const startAuction = async (req, res) => {
+    const { adId } = req.params;
     try {
-        const ad = req.body
+        const ad = await AdModel.findById(adId);
 
-        const createAd = await AuctionService.createNewAd(ad);
+        if (!ad) {
+            res
+                .status(404)
+                .json({ status: "NOT FOUND", data: { error: "Not Found" } });
+        }
+        if (ad.status == "Closed") {
+            res.status(400).json({
+                status: "FAILED",
+                data: { error: "Auction has already ended" },
+            });
+        }
 
-        if (createAd) res.status(201).json({ status: "OK", data: createAd });
+        if (ad.status == "Open") {
+            res.status(400).json({
+                status: "FAILED",
+                data: { error: "Auction has already started" },
+            });
+        }
 
-    } catch (error) {
-        console.log(error)
-        res
-            .status(error?.status || 500)
-            .json({ status: "FAILED", data: { error: error?.message || error } });
-    }
-};
+        ad.status = "Open";
 
-const getAllAds = async (req, res) => {
-    try {
-        const ads = await AdModel.find();
-        if (ads)
+        const auctionStarted = await ad.save();
+
+        if (auctionStarted)
             res.status(200).json({
                 status: "OK",
-                data: ads
+                data: auctionStarted,
             });
     } catch (error) {
         res
@@ -32,72 +41,8 @@ const getAllAds = async (req, res) => {
     }
 };
 
-const addBid = async (req, res) => {
-    try {
-        res.status(200).json({
-            status: "OK",
-        });
-    } catch (error) {
-        res
-            .status(error?.status || 500)
-            .json({ status: "FAILED", data: { error: error?.message || error } });
-    }
-};
 
-const getAllBids = async (req, res) => {
-    try {
-        res.status(200).json({
-            status: "OK",
-        });
-    } catch (error) {
-        res
-            .status(error?.status || 500)
-            .json({ status: "FAILED", data: { error: error?.message || error } });
-    }
-};
 
-const joinAuction = async (req, res) => {
-    try {
-        res.status(200).json({
-            status: "OK",
-        });
-    } catch (error) {
-        res
-            .status(error?.status || 500)
-            .json({ status: "FAILED", data: { error: error?.message || error } });
-    }
-};
 
-const getAuction = async (req, res) => {
-    try {
-        res.status(200).json({
-            status: "OK",
-        });
-    } catch (error) {
-        res
-            .status(error?.status || 500)
-            .json({ status: "FAILED", data: { error: error?.message || error } });
-    }
-};
 
-const startAuction = async (req, res) => {
-    try {
-        res.status(200).json({
-            status: "OK",
-        });
-    } catch (error) {
-        res
-            .status(error?.status || 500)
-            .json({ status: "FAILED", data: { error: error?.message || error } });
-    }
-};
-
-module.exports = {
-    addAd,
-    getAllAds,
-    addBid,
-    getAllBids,
-    joinAuction,
-    getAuction,
-    startAuction,
-};
+module.exports = { startAuction };
