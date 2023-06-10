@@ -23,13 +23,10 @@ jobs:
         run: npm ci --silent
 
       - name: Build
-        run: npm run build -ws frontend
+        run: npm run build -ws --if-present
 
-      - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v3
+      - name: Archive Production Artifact
+        uses: actions/upload-artifact@master
         with:
-          name: build
-          path: |
-            build
-            *.js
-            !node_modules
+          name: front
+          path: frontend/dist
