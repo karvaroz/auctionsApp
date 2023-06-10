@@ -20,13 +20,13 @@ jobs:
           node-version: 18
       
       - name: Install Dependencies
-        run: npm ci --silent
+        run: npm i
 
       - name: Build
         run: npm run build -w frontend
 
-      - name: Archive Production Artifact
-        uses: actions/upload-artifact@master
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v3.1.2
         with:
-          name: front
+          name: build
           path: frontend/dist
