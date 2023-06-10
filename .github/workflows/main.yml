@@ -19,14 +19,18 @@ jobs:
         with:
           node-version: 18
       
-      - name: Install Dependencies
-        run: npm i
-
-      - name: Build
-        run: npm run build -w frontend
-
+      - name: Install & Build
+        run: |
+          npm  ci --silent
+          npm run build -w frontend
+        working-directory: .
+      
       - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v3.1.2
+        uses: actions/upload-artifact@v3
         with:
+          # Artifact name
           name: build
-          path: frontend/dist
+          path: |
+            build
+            *.js
+            !node_modules
