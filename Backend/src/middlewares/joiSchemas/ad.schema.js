@@ -8,10 +8,18 @@ const AdSchema = Joi.object({
     duration: Joi.number().positive().greater(0).max(3600),
     timer: Joi.number().positive().greater(0),
     image: Joi.string(),
+    category: Joi.string(),
     status: Joi.string(),
     purchasedBy: Joi.string(),
     currentBidder: Joi.string(),
-    bids: Joi.array()
+    bids: Joi.array().items(
+        Joi.object().keys({
+            user: Joi.string(),
+            amount: Joi.number().positive().greater(0),
+            date: Joi.date(),
+        })
+    ),
+    room: Joi.string(),
 });
 
 module.exports = AdSchema;
