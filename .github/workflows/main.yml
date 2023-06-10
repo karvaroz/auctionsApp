@@ -1,15 +1,15 @@
-name: My first workflow
+name: Workflow  
 
-on:
+on: 
   workflow_dispatch:
   
   push:
     branches:
-    - master
-    
+      - master
+
 jobs:
-  compile: 
-    runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -18,28 +18,19 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-        
+      
       - name: Install & Build
         run: |
-          npm ci --silent
-          npm run build --w frontend
+          npm  ci --silent
+          npm run build -w frontend
         working-directory: .
-        
+      
       - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v3.1.2
+        uses: actions/upload-artifact@v3
         with:
-            # Artifact name
-            name: build
-            # A file, directory or wildcard pattern that describes what to upload
-            path: |
-              *.js
-              !node_modules
-
- 
-          
-        
-
-    
-
-  
-  
+          # Artifact name
+          name: build
+          path: |
+            build
+            *.js
+            !node_modules
