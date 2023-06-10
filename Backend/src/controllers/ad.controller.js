@@ -1,9 +1,11 @@
+const { AdModel } = require("../models");
+const { AdService } = require("../services");
 
 const addAd = async (req, res) => {
     try {
         const ad = req.body;
 
-        const createAd = await AuctionService.createNewAd(ad);
+        const createAd = await AdService.createNewAd(ad);
 
         if (createAd) res.status(201).json({ status: "OK", data: createAd });
     } catch (error) {
