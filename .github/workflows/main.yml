@@ -1,4 +1,4 @@
-name: Mi primer Workflow  
+name: Workflow  
 
 on: 
   workflow_dispatch:
@@ -22,7 +22,7 @@ jobs:
       - name: Install & Build
         run: |
           npm  ci --silent
-          npm run build -w frontend
+          npm run build --w frontend
         working-directory: .
       
       - name: Upload a Build Artifact
@@ -32,6 +32,5 @@ jobs:
           name: build
           path: |
             build
-            dist
             *.js
             !node_modules
