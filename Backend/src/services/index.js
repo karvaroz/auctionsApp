@@ -1,2 +1,2 @@
 exports.UserService = require("./user.services");
-exports.AuctionService = require("./auction.services")
+exports.AdService = require("./ad.services")
