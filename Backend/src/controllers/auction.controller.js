@@ -1,36 +1,38 @@
-const { AdModel, AuctionModel } = require("../models");
-const { AuctionService } = require("../services");
+const { AdModel } = require("../models");
 
 const startAuction = async (req, res) => {
     const { adId } = req.params;
+
+    const ad = await AdModel.findById(adId);
+
+    if (!ad) {
+        return res
+            .status(404)
+            .json({ status: "NOT FOUND", data: { error: "Not Found" } });
+    }
+
+    if (ad.status == "Closed") {
+        return res.status(400).json({
+            status: "FAILED",
+            data: { error: "Auction has already ended" },
+        });
+    }
+
+    if (ad.status == "Open") {
+        return res.status(400).json({
+            status: "FAILED",
+            data: { error: "Auction has already started" },
+        });
+    }
+
     try {
-        const ad = await AdModel.findById(adId);
-
-        if (!ad) {
-            res
-                .status(404)
-                .json({ status: "NOT FOUND", data: { error: "Not Found" } });
-        }
-        if (ad.status == "Closed") {
-            res.status(400).json({
-                status: "FAILED",
-                data: { error: "Auction has already ended" },
-            });
-        }
-
-        if (ad.status == "Open") {
-            res.status(400).json({
-                status: "FAILED",
-                data: { error: "Auction has already started" },
-            });
-        }
 
         ad.status = "Open";
 
         const auctionStarted = await ad.save();
 
         if (auctionStarted)
-            res.status(200).json({
+            return res.status(200).json({
                 status: "OK",
                 data: auctionStarted,
             });
