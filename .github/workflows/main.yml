@@ -23,7 +23,7 @@ jobs:
         run: npm ci --silent
 
       - name: Build
-        run: npm run build -ws --if-present
+        run: npm run build -ws frontend
 
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3
