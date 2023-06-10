@@ -1,42 +1,37 @@
-name: My first workflow
+name: Mi primer Workflow  
 
-on:
+on: 
   workflow_dispatch:
   
   push:
     branches:
-    - master
-    
+      - master
+
 jobs:
-  compile: 
-    runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3.5.3
+        uses: actions/checkout@v3
         
       - name: Setup Node.js environment
-        uses: actions/setup-node@v3.6.0
+        uses: actions/setup-node@v3
         with:
-          node-version: 18.16.0
-        
-      - name: Install
-        run: npm ci --silent
-        
-      - name: Build
-        run: npm run build -w frontend
-
-      - name: Archive Production Artifact
-        uses: actions/upload-artifact@master
+          node-version: 18
+      
+      - name: Install & Build
+        run: |
+          npm  ci --silent
+          npm run build -w frontend
+        working-directory: .
+      
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v3
         with:
-          name: frontend
-          path: frontend/dist
-          
-
- 
-          
-        
-
-    
-
-  
-  
+          # Artifact name
+          name: build
+          path: |
+            build
+            dist
+            *.js
+            !node_modules
