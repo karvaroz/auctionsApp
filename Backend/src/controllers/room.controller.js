@@ -1,26 +1,46 @@
-const joinAuction = async (req, res) => {
+const { RoomModel } = require("../models");
+
+const joinRoom = async (req, res) => {
     const { user } = req;
-    const { auctionId } = req.params;
+    const { roomId } = req.params;
+
+    const room = await RoomModel.findById(roomId);
+
+    const userInRoom = room.users.find((roomUser) => roomUser == user);
+
+    if (userInRoom) {
+        return res
+            .status(400)
+            .json({ status: "FAILED", data: { error: "User already joined" } });
+    }
+
     try {
-        const auction = await AuctionModel.findById(auctionId);
 
-        const userInAuction = auction.users.find((auctionUser) => {
-            return auctionUser._id == user.id ? true : false;
-        });
+        room.users.push(user);
 
-        if (userInAuction) {
-            res
-                .status(404)
-                .json({ status: "FAILED", data: { error: "User already joined" } });
-        }
+        const roomSaved = await room.save();
+        if (roomSaved)
+            return res.status(200).json({
+                status: "OK",
+                data: roomSaved,
+            });
 
-        auction.users.push(user.id);
+    } catch (error) {
+        res
+            .status(error?.status || 500)
+            .json({ status: "FAILED", data: { error: error?.message || error } });
+    }
+};
 
-        const auctionSaved = await auction.save();
-        if (auctionSaved)
+const getRoom = async (req, res) => {
+    const { roomId } = req.params;
+    try {
+        const room = await RoomModel.findById(roomId);
+
+        if (room)
             res.status(200).json({
                 status: "OK",
-                data: auctionSaved,
+                data: room,
             });
     } catch (error) {
         res
@@ -29,21 +49,4 @@ const joinAuction = async (req, res) => {
     }
 };
 
-const getAuction = async (req, res) => {
-    const { auctionId } = req.params;
-    try {
-        const auction = await AuctionModel.findById(auctionId);
-
-        if (auction)
-            res.status(200).json({
-                status: "OK",
-                data: auction,
-            });
-    } catch (error) {
-        res
-            .status(error?.status || 500)
-            .json({ status: "FAILED", data: { error: error?.message || error } });
-    }
-};
-
-module.exports = { joinAuction, getAuction }
+module.exports = { joinRoom, getRoom }
