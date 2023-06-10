@@ -1,0 +1,11 @@
+{
+    "hosting": {},
+    "functions": {
+        "source": "backend",
+        "codebase": "default",
+        "ignore": [
+            "*.md",
+            "*.js"
+        ]
+    }
+}

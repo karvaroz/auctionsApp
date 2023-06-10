@@ -9,4 +9,4 @@ const healthCheck = async (req, res) => {
     }
 };
 
-module.exports = healthCheck
+module.exports = { healthCheck }
