@@ -19,16 +19,15 @@ jobs:
         with:
           node-version: 18
       
-      - name: Install & Build
-        run: |
-          npm  ci --silent
-          npm run build --w frontend
-        working-directory: .
-      
+      - name: Install Dependencies
+        run: npm ci --silent
+
+      - name: Build
+        run: npm run build -ws --if-present
+
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3
         with:
-          # Artifact name
           name: build
           path: |
             build
