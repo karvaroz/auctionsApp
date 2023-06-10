@@ -6,7 +6,7 @@ const morgan = require("morgan");
 
 const { MongoDB } = require("./database");
 const { ErrorHandler, NotFoundHandler, Socket } = require("./middlewares");
-const { AuthRouter, AuctionRouter, AdRouter, BidRouter, RoomRouter } = require("./routes");
+const { AuthRouter, AuctionRouter, AdRouter, BidRouter, RoomRouter, AppRouter } = require("./routes");
 // const { Server } = require("socket.io");
 
 const PORT = process.env.PORT || 3000;
@@ -49,6 +49,7 @@ app.use(ErrorHandler);
 app.use(NotFoundHandler);
 // app.use(Socket);
 
+app.use("/", AppRouter)
 app.use("/api/v1/ad", AdRouter)
 app.use("/api/v1/auction", AuctionRouter)
 app.use("/api/v1", AuthRouter) //Ok
