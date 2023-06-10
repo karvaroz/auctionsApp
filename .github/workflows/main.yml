@@ -19,12 +19,10 @@ jobs:
         with:
           node-version: 18.x
         
-      - name: Install
-        run: npm ci --silent
-        working-directory: .
-        
-      - name: Build
-        run: npm run build --w frontend
+      - name: Install & Build
+        run: |
+          npm ci --silent
+          npm run build --w frontend
         working-directory: .
         
       - name: Upload a Build Artifact
