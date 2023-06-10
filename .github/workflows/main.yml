@@ -12,14 +12,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.5.3
         
       - name: Setup Node.js environment
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v3.6.0
         with:
-          node-version: 18
+          node-version: 18.16.0
         
-      - name: Install & Build
+      - name: Install
         run: npm ci --silent
         
       - name: Build
@@ -28,9 +28,9 @@ jobs:
       - name: Archive Production Artifact
         uses: actions/upload-artifact@master
         with:
-          name: front
+          name: frontend
           path: frontend/dist
-          ignore: node_modules
+          
 
  
           
