@@ -23,7 +23,7 @@ jobs:
         run: npm ci --silent
 
       - name: Build
-        run: npm run build -ws --if-present
+        run: npm run build -w frontent
 
       - name: Archive Production Artifact
         uses: actions/upload-artifact@master
