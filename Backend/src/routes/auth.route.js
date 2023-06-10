@@ -1,20 +1,20 @@
 const { Router } = require("express");
 
-const { UserController } = require("../controllers");
 const { LoginSchemaValidation, UserSchemaValidation } = require("../middlewares");
+const { AuthController } = require("../controllers");
 
 const AuthRouter = Router();
 
 AuthRouter.post(
 	"/login",
 	LoginSchemaValidation,
-	UserController.loginUser
+	AuthController.loginUser
 );
 
 AuthRouter.post(
 	"/register",
 	UserSchemaValidation,
-	UserController.registerUser
+	AuthController.registerUser
 );
 
 module.exports = AuthRouter;
