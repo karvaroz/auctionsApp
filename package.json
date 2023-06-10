@@ -8,6 +8,7 @@
   "description": "This is a MERN app about live auctions",
   "main": "index.js",
   "scripts": {
+    "build": "echo 'ok' ",
     "backend": "npm run dev -w auctionapp/backend",
     "frontend": "npm run dev -w auctionapp/frontend"
   },
