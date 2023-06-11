@@ -14,47 +14,26 @@ const {
 	RoomRouter,
 	AppRouter,
 } = require("./routes");
-// const { Server } = require("socket.io");
+const { Server } = require("socket.io");
 
 const PORT = process.env.PORT || 3000;
+
 const app = express();
 const httpServer = http.createServer(app);
-// const io = new Server(httpServer)
 
-// io.on('connection', (socket) => {
-// 	console.log('### Socket IO client connected');
-// 	socket.on('disconnect', (reason) => {
-// 		console.log('### Socket IO client disconnected');
-// 	});
-// 	socket.on('leaveHome', () => {
-// 		socket.disconnect();
-// 	});
-// });
-// adIo.on('connect', (socket) => {
-// 	socket.join('testroom')
-// 	socket.on('joinAd', ({ ad }) => {
-// 		socket.join(ad.toString());
-// 		console.log(`User joined room ${ad}`);
-// 	});
-// 	socket.on('leaveAd', ({ ad }) => {
-// 		socket.leave(ad.toString());
-// 		console.log(`Left room ${ad}`);
-// 	});
-// 	socket.on('disconnect', () => {
-// 		console.log('User has disconnect from ad');
-// 	});
-// });
-
-app.use(cors());
-app.use(morgan(":method :url :status :res[content-length] - :response-time ms"));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+const io = new Server(httpServer, { cors: { origin: "*" } });
+io.on("connection", require("./utils/socket"));
 
 app.use(ErrorHandler);
 app.use(NotFoundHandler);
-// app.use(Socket);
 
-app.use("/", AppRouter);
+app.use(cors({ origin: "*" }));
+app.use(morgan("dev"));
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use("/api/v1", AppRouter);
 app.use("/api/v1/ad", AdRouter);
 app.use("/api/v1/auction", AuctionRouter);
 app.use("/api/v1", AuthRouter); //Ok
