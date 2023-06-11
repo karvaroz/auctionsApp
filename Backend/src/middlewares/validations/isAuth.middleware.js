@@ -6,8 +6,10 @@ const isAuthenticated = async (req, res, next) => {
 
 		const tokenData = await GenerateToken.verifyToken(token);
 
-		req.user = tokenData.id
-		next();
+		if (tokenData) {
+			req.user = tokenData.id
+			next();
+		}
 
 	} catch (error) {
 		res.status(403).json({
