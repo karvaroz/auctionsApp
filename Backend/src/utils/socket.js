@@ -1,27 +1,17 @@
-const { Server } = require('socket.io');
+module.exports = (socket) => {
+	// console.log("Client connected");
 
-let io;
-let adIo;
+	socket.on("userLoggedIn", (token) => {
+		socket.broadcast.emit("userLoggedIn", token);
+		console.log(token);
+	});
 
-const initializeSocket = (server) => {
-    io = new Server(server, { cors: { origin: "*" } });
-    adIo = new Server(server, { cors: { origin: "*" } });
-    return { io, adIo };
-}
+	socket.on("auctionCreated", (token) => {
+		socket.broadcast.emit("auctionCreated", token);
+		console.log(token);
+	});
 
-const getIo = () => {
-    if (!io) {
-        throw new Error('Socket.io not initialized');
-    }
-    return io;
-}
-
-
-const getAdIo = () => {
-    if (!adIo) {
-        throw new Error('Socket.io not initialized');
-    }
-    return adIo;
-}
-
-module.exports = { initializeSocket, getIo, getAdIo };
+	// socket.emit("Close", () => {
+	// 	console.log("Connection closed");
+	// });
+};
