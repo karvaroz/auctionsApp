@@ -1,17 +1,11 @@
 const { Router } = require("express");
-const { isAuthenticated } = require("../middlewares");
+const { isAuthenticated, ValidMongoId } = require("../middlewares");
 const { BidController } = require("../controllers");
 
 const BidRouter = Router();
 
-BidRouter.post("/:adId",
-    isAuthenticated,
-    BidController.addBid
-)
+BidRouter.post("/:id", isAuthenticated, ValidMongoId, BidController.addBid);
 
-BidRouter.get("/:adId",
-    isAuthenticated,
-    BidController.getAllBids
-)
+BidRouter.get("/:id", isAuthenticated, ValidMongoId, BidController.getAllBids);
 
 module.exports = BidRouter;

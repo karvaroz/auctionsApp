@@ -1,17 +1,16 @@
 const { Router } = require("express");
-const { isAuthenticated } = require("../middlewares");
+const { isAuthenticated, ValidMongoId } = require("../middlewares");
 const { RoomController } = require("../controllers");
 
 const RoomRouter = Router();
 
-RoomRouter.post("/join/:roomId",
-    isAuthenticated,
-    RoomController.joinRoom
-)
+RoomRouter.post(
+	"/join/:id",
+	isAuthenticated,
+	ValidMongoId,
+	RoomController.joinRoom
+);
 
-RoomRouter.get("/:roomId",
-    isAuthenticated,
-    RoomController.getRoom
-)
+RoomRouter.get("/:id", isAuthenticated, ValidMongoId, RoomController.getRoom);
 
 module.exports = RoomRouter;

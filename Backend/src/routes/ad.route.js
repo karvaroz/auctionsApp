@@ -1,25 +1,24 @@
 const { Router } = require("express");
 const { AdController } = require("../controllers");
-const { isAuthenticated, isRoleAdmin, AdSchemaValidation } = require("../middlewares");
+const {
+	isAuthenticated,
+	isRoleAdmin,
+	AdSchemaValidation,
+	ValidMongoId,
+} = require("../middlewares");
 
 const AdRouter = Router();
 
-AdRouter.post("/",
-    isAuthenticated,
-    isRoleAdmin,
-    AdSchemaValidation,
-    AdController.addAd
-)
+AdRouter.get("/:id", isAuthenticated, ValidMongoId, AdController.getAdById);
 
-AdRouter.get("/",
-    isAuthenticated,
-    AdController.getAllAds
-)
+AdRouter.get("/", isAuthenticated, AdController.getAllAds);
 
-AdRouter.get("/:adId",
-    isAuthenticated,
-    AdController.getAdById
-)
-
+AdRouter.post(
+	"/",
+	isAuthenticated,
+	isRoleAdmin,
+	AdSchemaValidation,
+	AdController.addAd
+);
 
 module.exports = AdRouter;
