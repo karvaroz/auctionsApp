@@ -1,10 +1,9 @@
-import instance from "./axios";
+import instance from "./axios"
 
 export const registerUserRequest = async (user) => {
-    return await instance.post("/register", user)
+  return await instance.post("/register", user)
 }
 
 export const loginUserRequest = async (user) => {
-    return await instance.post("/login", user)
+  return await instance.post("/login", user)
 }
-
