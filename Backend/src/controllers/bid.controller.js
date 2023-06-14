@@ -1,4 +1,5 @@
 const { AdModel } = require("../models");
+// const socket = require("../utils/socket");
 
 const addBid = async (req, res) => {
 	const { id } = req.params;
@@ -23,28 +24,25 @@ const addBid = async (req, res) => {
 		return res.status(400).json({
 			status: "FAILED",
 			data: {
-				error:
-					"As the auction has not yet begun or ended, you are unable to put a bid",
+				error: "Auction has ended or has not started",
 			},
 		});
 	}
 
 	try {
-		const bids = ad.bids.push({ user: req.user, amount: amount });
+		ad.bids.push({ user: req.user, amount: amount });
+		ad.currentPrice = amount;
+		ad.currentBidder = req.user;
 
-		const updateAd = new AdModel({
-			...ad,
-			bids,
-			currentPrice: amount,
-			currentBidder: req.user,
+		const adSaved = await ad.save();
+
+		// socket.to(adSaved._id.toString()).emit("offerBid", adSaved);
+		console.log("offerBid saved");
+
+		res.status(200).json({
+			status: "OK",
+			data: adSaved,
 		});
-		const adSaved = await updateAd.save();
-
-		if (adSaved)
-			res.status(200).json({
-				status: "OK",
-				data: adSaved,
-			});
 	} catch (error) {
 		res
 			.status(error?.status || 500)
@@ -55,13 +53,21 @@ const addBid = async (req, res) => {
 const getAllBids = async (req, res) => {
 	const { id } = req.params;
 
-	try {
-		const ad = await AdModel.find({ _id: id });
+	const ad = await AdModel.findById(id);
 
+	if (!ad) {
+		return res
+			.status(404)
+			.json({ status: "FAILED", data: { error: "Not Found" } });
+	}
+
+	try {
+		const allBidsInAd = ad.bids;
 		if (ad) {
 			return res.status(200).json({
 				status: "OK",
-				data: ad?.bids?.length > 0 ? ad?.bids : [],
+				data: allBidsInAd,
+				highest: [allBidsInAd[allBidsInAd.length - 1]],
 			});
 		}
 		return res
