@@ -11,17 +11,9 @@ import Header from "./components/Header"
 
 import ProtectedRoutes from "./utils/ProtectedRoutes"
 import { useGlobalState } from "./context/AuthContext"
-import { useEffect } from "react"
 
 const App = () => {
   const { isAuthenticated, user } = useGlobalState()
-  const socket = io("http://localhost:3000")
-
-  useEffect(() => {
-    socket.on("userLoggedIn", (token) => {
-      console.log("User logged in", token)
-    })
-  }, [])
 
   return (
     <BrowserRouter>
