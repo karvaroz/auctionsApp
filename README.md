@@ -88,8 +88,8 @@ To run this project, you will need to add the following environment variables to
 
 ## Deploy
 
-Backend on Render: https://auction-app-backend-karvaroz.onrender.com/api/v1
-Frontend on Netlify: https://auction-app-frontend-karvaroz.netlify.app/
+- Backend on Render: https://auction-app-backend-karvaroz.onrender.com/api/v1
+- Frontend on Netlify: https://auction-app-frontend-karvaroz.netlify.app/
 
 ## Authors
 
