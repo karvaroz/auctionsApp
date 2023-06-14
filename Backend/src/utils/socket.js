@@ -1,16 +1,50 @@
 module.exports = (socket) => {
-	// console.log("Client connected");
+	const onlineUsers = [];
 
-	socket.on("userLoggedIn", (token) => {
-		socket.broadcast.emit("userLoggedIn", token);
-		console.log(token);
+	console.log("New connection =>", socket.id);
+
+	socket.on("userLoggedIn", (userId) => {
+		console.log("userLoggedIn =>", userId);
+
+		const userIsIn = onlineUsers.some((user) => user.userId === userId);
+		if (!userIsIn)
+			onlineUsers.push({
+				userId,
+				socketId: socket.id,
+			});
+
+		console.log(onlineUsers);
+
+		socket.broadcast.emit("getOnlineUsers", onlineUsers);
 	});
 
-	socket.on("auctionCreated", (token) => {
-		socket.broadcast.emit("auctionCreated", token);
-		console.log(token);
+	socket.on("auctionCreated", (auction) => {
+		socket.broadcast.emit("auctionCreated", auction);
+		console.log("auctionCreated");
 	});
 
+	socket.on("UserJoinRoom", (userId, room) => {
+		// socket.broadcast.to(room._id).emit("UserJoinRoom", room);
+		socket.broadcast.emit("UserJoinRoom", room);
+		console.log("UserJoinRoom");
+	});
+
+	socket.on("auctionStarted", (auction) => {
+		// socket.broadcast.to(auction._id).emit("auctionStarted", auction);
+		socket.broadcast.emit("auctionStarted", auction);
+		console.log("auctionStarted");
+	});
+
+	socket.on("offerBid", (bid) => {
+		// socket.broadcast.to(auction._id).emit("offerBid", bid);
+		socket.broadcast.emit("offerBid", bid);
+		console.log("offerBid");
+	});
+
+	socket.on("disconnect", () => {
+		let onlineUsers = onlineUsers.filter((user) => user.socketId !== socket.id);
+		socket.broadcast.emit("getOnlineUsers", onlineUsers);
+	});
 	// socket.emit("Close", () => {
 	// 	console.log("Connection closed");
 	// });
