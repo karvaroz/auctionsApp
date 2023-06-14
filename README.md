@@ -91,6 +91,10 @@ To run this project, you will need to add the following environment variables to
 - Backend on Render: https://auction-app-backend-karvaroz.onrender.com/api/v1
 - Frontend on Netlify: https://auction-app-frontend-karvaroz.netlify.app/
 
+## Docs
+
+- Docs on Postman: https://documenter.getpostman.com/view/16003428/2s93sgV9st
+
 ## Authors
 
 - [@karvaroz](https://www.github.com/karvaroz)
