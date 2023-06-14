@@ -1,17 +1,37 @@
-import { createContext, useContext, useState } from "react"
+import { createContext, useContext, useEffect, useState } from "react"
 import io from "socket.io-client"
-import {
-  createAdRequest,
-  getAdByIdRequest,
-  getAllAdsRequest,
-} from "../api/auction"
+import { createAdRequest, getAllAdsRequest } from "../api/auction"
 import { Toast } from "../utils/Toast"
+import { useGlobalState } from "./AuthContext"
 
 export const AuctionGlobal = createContext()
 
 export const AuctionProvider = ({ children }) => {
   const [ads, setAds] = useState([])
-  const socket = io("http://localhost:3000")
+  const [socket, setSocket] = useState(null)
+  const [onlineUsers, setOnlineUsers] = useState([])
+  const { user } = useGlobalState()
+
+  useEffect(() => {
+    const newSocket = io("http://localhost:3000")
+    setSocket(newSocket)
+
+    return () => {
+      newSocket.disconnect()
+    }
+  }, [user])
+
+  useEffect(() => {
+    if (!socket) return
+    socket.emit("userLoggedIn", user?.id)
+    socket.on("getOnlineUsers", (res) => {
+      setOnlineUsers(res)
+    })
+
+    return () => {
+      socket.off("getOnlineUsers")
+    }
+  }, [socket])
 
   const createAd = async (data) => {
     try {
@@ -38,6 +58,7 @@ export const AuctionProvider = ({ children }) => {
         ads,
         createAd,
         getAds,
+        onlineUsers,
       }}
     >
       {children}
