@@ -54,7 +54,9 @@ const startAuction = async (req, res) => {
 		}, 1000);
 
 		setTimeout(async () => {
+			await ad.updateOne({ status: "Closed" });
 			console.log("Countdown finished.");
+			console.log("Ad closed");
 			clearInterval(interval);
 
 			const adEnded = await AdModel.findById(ad._id);

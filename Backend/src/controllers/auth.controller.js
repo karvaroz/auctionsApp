@@ -56,7 +56,27 @@ const registerUser = async (req, res) => {
 	}
 };
 
+const getUserById = async (req, res) => {
+	const { id } = req.params;
+
+	const user = await UserService.getUserById(id);
+
+	if (!user) {
+		return res
+			.status(404)
+			.json({ status: "NOT FOUND", data: { error: "Not Found" } });
+	}
+
+	try {
+		res.status(200).json({ status: "OK", data: user });
+	} catch (error) {
+		res
+			.status(error?.status || 500)
+			.json({ status: "FAILED", data: { error: error?.message || error } });
+	}
+};
 module.exports = {
 	loginUser,
 	registerUser,
+	getUserById,
 };

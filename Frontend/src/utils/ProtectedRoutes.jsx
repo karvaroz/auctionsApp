@@ -2,7 +2,7 @@ import { Navigate, Outlet } from "react-router-dom"
 import { useGlobalState } from "../context/AuthContext"
 
 const ProtectedRoutes = () => {
-  const { isAuthenticated, user } = useGlobalState()
+  const { isAuthenticated } = useGlobalState()
 
   if (!isAuthenticated) return <Navigate to="/" replace />
 

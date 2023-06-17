@@ -2,27 +2,100 @@ import { useParams } from "react-router-dom"
 import { useEffect, useState } from "react"
 
 import { Toast } from "../utils/Toast"
-import { getAdByIdRequest } from "../api/auction"
+import {
+  getAdByIdRequest,
+  offerBidRequest,
+  startAuctionRequest,
+} from "../api/auction"
+import { useGlobalState } from "../context/AuthContext"
+import { getUserByIdRequest } from "../api/auth"
 
 const DetailPage = () => {
   const { adId } = useParams()
+  const { user } = useGlobalState()
   const [adDetail, setAdDetail] = useState(null)
+  const [currentBidderName, setCurrentBidderName] = useState("")
+  const [seconds, setSeconds] = useState(120)
+  const [startCountdown, setStartCountdown] = useState(false)
+  const [offerValue, setOfferValue] = useState(0)
+
+  const fetchAdDetail = async () => {
+    try {
+      const res = await getAdByIdRequest(adId)
+      setAdDetail(res.data.data)
+    } catch (error) {
+      console.error(error)
+      Toast("Something went wrong", "error")
+    }
+  }
 
   useEffect(() => {
-    const fetchAdDetail = async () => {
-      try {
-        const res = await getAdByIdRequest(adId)
-        setAdDetail(res.data.data)
-      } catch (error) {
-        console.error(error)
-        Toast("Something went wrong", "error")
-      }
-    }
-
     fetchAdDetail()
   }, [adId])
 
-  if (!adDetail)
+  const getUserName = async (userId) => {
+    try {
+      const res = await getUserByIdRequest(userId)
+      console.log(res)
+      setCurrentBidderName(res?.data?.data[0]?.username)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  useEffect(() => {
+    if (adDetail && adDetail?.currentBidder !== undefined)
+      getUserName(adDetail?.currentBidder)
+  }, [adDetail])
+
+  useEffect(() => {
+    if (startCountdown) {
+      const interval = setInterval(() => {
+        setSeconds((prevSeconds) => prevSeconds - 1)
+      }, 1000)
+
+      return () => {
+        clearInterval(interval)
+      }
+    }
+  }, [startCountdown])
+
+  const startAuction = async () => {
+    try {
+      const res = await startAuctionRequest(adId)
+      console.log(res)
+      if (res) fetchAdDetail()
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  useEffect(() => {
+    if (adDetail?.status == "Open") setStartCountdown(true)
+    if (adDetail?.status == "Closed") setStartCountdown(false)
+  }, [adDetail])
+
+  const handleInputChange = (event) => {
+    setOfferValue(event.target.value)
+  }
+
+  const handleOffer = async (event) => {
+    event.preventDefault()
+    if (offerValue) {
+      try {
+        const res = await offerBidRequest(adId, offerValue)
+        console.log(res)
+        if (res) fetchAdDetail()
+        Toast("Bid Offer Sent", "success")
+      } catch (error) {
+        console.error(error)
+        Toast("Error", "error")
+      }
+    }
+    setOfferValue("")
+  }
+
+  if (!adDetail && currentBidderName !== "")
     return (
       <p className="flex items-start justify-center text-2xl text-bold">
         Loading auction details...
@@ -43,7 +116,8 @@ const DetailPage = () => {
           bids: {adDetail?.bids?.length}
         </span>
         <span className="inline-flex items-center rounded-md bg-purple-50 px-2 py-1 text-xs font-medium text-purple-700 ring-1 ring-inset ring-purple-700/10">
-          timer: {adDetail?.timer}
+          Duration: {seconds}
+          {/* {adDetail?.duration} */}
         </span>
       </div>
 
@@ -78,26 +152,34 @@ const DetailPage = () => {
               Current Bidder
             </dt>
             <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-              currentBidder
+              {!currentBidderName ? "None" : currentBidderName}
             </dd>
           </div>
         </dl>
-        <div className="relative mt-2">
-          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-            <span className="text-gray-500 sm:text-sm">$</span>
-          </div>
-          <input
-            type="text"
-            name="price"
-            id="price"
-            className="rounded-md border-0 py-1.5 pl-7  text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 "
-            placeholder="0.00"
-          />
-        </div>
-        <button className="w-full bg-blue-400 text-blue-50 rounded-lg py-2 px-4 mt-5">
-          Offer Bid
-        </button>
+        {adDetail?.status === "Open" && user?.role === "User" ? (
+          <form onSubmit={handleOffer}>
+            <input
+              value={offerValue}
+              onChange={handleInputChange}
+              type="number"
+              placeholder="place a bid"
+              className="rounded-md border-0 py-1.5 pl-7 px-2 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400"
+            />
+            <button className="bg-blue-400 text-blue-50 rounded-lg py-2 px-4 mt-5">
+              Offer
+            </button>
+          </form>
+        ) : null}
       </div>
+
+      {adDetail?.status === "Upcoming" && user?.role === "Admin" ? (
+        <button
+          onClick={() => startAuction()}
+          className="bg-blue-400 text-blue-50 rounded-lg py-2 px-4 mt-5"
+        >
+          Start Auction
+        </button>
+      ) : null}
     </div>
   )
 }

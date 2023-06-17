@@ -18,11 +18,11 @@ const Ad = mongoose.Schema(
 		},
 		duration: {
 			type: Number,
-			default: 15,
+			default: 120,
 		},
 		timer: {
 			type: Number,
-			default: 15,
+			default: 120,
 		},
 		image: {
 			type: String,

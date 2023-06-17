@@ -3,6 +3,7 @@ import io from "socket.io-client"
 import { createAdRequest, getAllAdsRequest } from "../api/auction"
 import { Toast } from "../utils/Toast"
 import { useGlobalState } from "./AuthContext"
+import { API_URL } from "../api/axios"
 
 export const AuctionGlobal = createContext()
 
@@ -10,10 +11,13 @@ export const AuctionProvider = ({ children }) => {
   const [ads, setAds] = useState([])
   const [socket, setSocket] = useState(null)
   const [onlineUsers, setOnlineUsers] = useState([])
+  const [newBis, setNewBis] = useState([])
   const { user } = useGlobalState()
 
   useEffect(() => {
+    // const newSocket = io("https://auction-app-backend-karvaroz.onrender.com/")
     const newSocket = io("http://localhost:3000")
+
     setSocket(newSocket)
 
     return () => {
@@ -32,6 +36,30 @@ export const AuctionProvider = ({ children }) => {
       socket.off("getOnlineUsers")
     }
   }, [socket])
+
+  // useEffect(() => {
+  //   if (!socket) return
+
+  //   const userId = ads?.bids.find((bid) => bid.user !== user?.id)
+
+  //   socket.emit("offerBid", {
+  //     ...newBis,
+  //     userId,
+  //   })
+  // }, [newBis])
+
+  // useEffect(() => {
+  //   if (!socket) return
+
+  //   socket.on("getBids", (res) => {
+  //     if (ads?._id !== res.bidId) return
+  //     setNewBis(res)
+  //   })
+
+  //   return () => {
+  //     socket.off("getBids")
+  //   }
+  // }, [socket, ads])
 
   const createAd = async (data) => {
     try {
